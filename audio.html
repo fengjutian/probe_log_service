@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        
+        // 获取音频输入设备  
+        navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {  
+            var audioContext = new (window.AudioContext || window.webkitAudioContext)(); 
+            var mediaStreamSource = audioContext.createMediaStreamSource(stream); 
+
+            var gainNode = audioContext.createGain();  
+            gainNode.gain.value = 1;  
+            mediaStreamSource.connect(gainNode);  
+            gainNode.connect(audioContext.destination);  
+        
+            // 声音分贝计算公式  
+            var calculateDecibel = function(inputBuffer) {  
+                var max = inputBuffer.reduce(function(max, x) { return Math.max(max, x); }, -Infinity);  
+                var rms = inputBuffer.reduce(function(rms, x) { return rms + x*x; }, 0).sqrt(2/inputBuffer.length);  
+                return 20 * Math.log10(rms/max);  
+            };  
+        
+            console.log('mediaStreamSource', mediaStreamSource)
+
+            mediaStreamSource.start();  
+            audioContext.startRendering();  
+        
+            // 在录音过程中实时计算分贝值  
+            audioContext.onaudioprocess = function(event) {  
+                var inputBuffer = event.inputBuffer;  
+                var inputData = inputBuffer.getChannelData(0); // 获取左声道音频数据  
+                var decibel = calculateDecibel(inputData);  
+                console.log("当前声音分贝: " + decibel + " dB");  
+            };  
+        }).catch(function(err) { console.log("获取音频输入设备失败: " + err); });
+    </script>
+</body>
+</html>
