@@ -12,13 +12,20 @@ interface log {
 
 @Controller('log')
 export class LogController {
-  @Get()
+
+  @Get('/get')
   async getLog() {
     return 'hello log';
   }
 
-  @Post()
+  @Post('/upload')
   async getUploadLog(@Body() logInfo: log) {
+
+    
+
+    return {"status": 200};
+
+
     const dbFoldName = 'db';
     const dbFileName = 'db/log.csv';
     const isExistDB = existsSync(dbFoldName);
@@ -31,10 +38,10 @@ export class LogController {
       ['zhaoliu', 23],
       ['sunqi', 24],
     ];
-    
+
     let jsonData = [{
-      name: "zhangsan1",
-      age: 30
+        name: 'zhangsan1',
+        age: 30,
     }, {
       name: "lisi1",
       age: 31
