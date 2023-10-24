@@ -21,9 +21,10 @@ export class LogController {
   @Post('/upload')
   async getUploadLog(@Body() logInfo: log) {
 
-    
+    console.log('logInfo', logInfo)
 
-    return {"status": 200};
+
+    return {"status": logInfo};
 
 
     const dbFoldName = 'db';
